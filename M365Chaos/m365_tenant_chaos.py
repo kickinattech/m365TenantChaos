@@ -1,5 +1,5 @@
 '''
-    m365_tenanat_randomiser
+    m365_tenanat_chaos
 
             Parameters:
                     None (need adding)
@@ -10,7 +10,6 @@ import subprocess
 import string
 import random
 import json
-#import sys
 import argparse
 import os
 import logging
@@ -574,9 +573,9 @@ logger.info("Logging Into Systems with Script Username & Passwords")
 login_into_systems(arg_username, arg_password)
 #logger.debug("Random Values: %s", str(arg_static))
 
-
-run_count = (get_count_value(arg_static, arg_maximumnumber))
-new_random_files(run_count, run_count, "./files")
+# Remove comments below once implement https://github.com/kickinattech/m365TenantChaos/issues/2
+#run_count = (get_count_value(arg_static, arg_maximumnumber))
+#new_random_files(run_count, run_count, "./files")
 
 run_count = get_count_value(arg_static, arg_maximumnumber)
 new_teams(run_count)
