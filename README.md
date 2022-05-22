@@ -24,6 +24,6 @@ Before using Microsoft 365 CLI in the script, you should manually run  Microsoft
  - -c/--chaosmode Should it create a static number of objects.
  - -s/--setupmode Should it run up in setup mode.
 
-## ToDO
+## ToDo
 
 There is number of enhancments that I wish/need to do. You can see list full list of proposed enhancements [here](https://github.com/kickinattech/m365TenantChaos/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement_)
