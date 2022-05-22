@@ -1,8 +1,10 @@
 # m365 Chaos Script
 
+## **Do Not Use On Production This Script Will Create and Delete Random Resources**
+
 ## Purpose
 
-This is a python script used to randomise activity in an m365 tenant. When paired with a pipeline, for example, Azure DevOps, this script allows random activity to be conducted on an M365 tenant for each night.
+This is a python script used to randomise activity in an m365 tenant. When paired with a pipeline, for example, Azure DevOps, this script allows random activity to be conducted on an M365 tenant for each night. **Do Not Use On Production This Script Will Create and Delete Random Resources**
 
 ## History
 
@@ -21,7 +23,7 @@ Before using Microsoft 365 CLI in the script, you should manually run  Microsoft
  - -o/--objectname The default text to add to start of objects created with script.
  - -b/--banneddomain Domain name to check and stop script it matches.  Use to check for production domain.
  - -m/--maxnumber Maximum number to use in chaos mode.
- - -c/--chaosmode Should it create a static number of objects.
+ - -c/--chaosmode Should it run in chaos mode.
  - -s/--setupmode Should it run up in setup mode.
 
 ## ToDo

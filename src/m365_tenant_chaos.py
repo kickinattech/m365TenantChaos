@@ -1,8 +1,16 @@
 '''
     m365_tenanat_chaos
-
+    Do Not Use On Production This Script Will Create and Delete Random Resources
             Parameters:
-                    None (need adding)
+                    
+            -u/--username Enter username to use to login into M365 Tenant.
+            -p/--password Enter password to use to login into M365 Tenant.
+            -o/--objectname The default text to add to start of objects created with script.
+            -b/--banneddomain Domain name to check and stop script it matches. Use to check for production domain.
+            -m/--maxnumber Maximum number to use in chaos mode.
+            -c/--chaosmode Should it run in chaos mode.
+            -s/--setupmode Should it run up in setup mode.
+
             Dependables:
                      AZ and M365 Cli
 '''
@@ -35,29 +43,29 @@ parser = argparse.ArgumentParser(
     description="M365 Chaos Logger", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("-u", "--username",
                     action="store", help="Enter username to use to login \
-                     into M365 Tenant",
+                     into M365 Tenant.",
                     required=True)
 parser.add_argument("-p", "--password",
                     action="store",
-                    help="Enter padssword to use to login into \
-                        M365 Tenanty", required=True)
+                    help="Enter password to use to login into \
+                        M365 Tenant.", required=True)
 parser.add_argument("-o", "--objectname",
                     action="store",
                     help="The default text to add to start of \
-                        objects created with script",
+                        objects created with script.",
                     required=True)
 parser.add_argument("-b", "--banneddomain",   action="store",
-                    help="domain name to check and stop script it matches.  Use \
+                    help="Domain name to check and stop script it matches.  Use \
                      to check for production domain.",
                     required=True)
 parser.add_argument("-m", "--maxnumber",   action="store", default=50,
                     help="Maximum number to use in chaos mode.",
                     required=False)
 parser.add_argument("-c", "--chaosmode",  action="store_true",
-                    help="Should it create a static number of objects",
+                    help="Should it run in chaos mode.",
                     required=False)
 parser.add_argument("-s", "--setupmode",  action="store_true",
-                    help="Should it run up in setup modes",
+                    help="Should it run up in setup mode.",
                     required=False)
 args = parser.parse_args()
 config = vars(args)
