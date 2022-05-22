@@ -16,13 +16,13 @@ Before using Microsoft 365 CLI in the script, you should manually run  Microsoft
 
 ## Parameters 
 
--u/--username Enter username to use to login into M365 Tenant
--p/--password Enter padssword to use to login into M365 Tenanty"
--o/--objectname The default text to add to start of objects created with script
--b/--banneddomain Domain name to check and stop script it matches.  Use to check for production domain.
--m/--maxnumber Maximum number to use in chaos mode.
--c/--chaosmode Should it create a static number of objects
--s/--setupmode Should it run up in setup modes
+ - -u/--username Enter username to use to login into M365 Tenant
+ - -p/--password Enter padssword to use to login into M365 Tenanty
+ - -o/--objectname The default text to add to start of objects created with script
+ - -b/--banneddomain Domain name to check and stop script it matches.  Use to check for production domain.
+ - -m/--maxnumber Maximum number to use in chaos mode.
+ - -c/--chaosmode Should it create a static number of objects
+ - -s/--setupmode Should it run up in setup modes
 
 ## ToDO
 
