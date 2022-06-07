@@ -1,6 +1,6 @@
 # m365 Chaos Script Alpha
 
-# This Project Is Alpha
+# This Project Is In Alpha
 
 ## Purpose
 
@@ -28,4 +28,4 @@ Before using Microsoft 365 CLI in the script, you should manually run  Microsoft
 
 ## ToDo
 
-There is number of enhancments that I wish/need to do. You can see list full list of proposed enhancements [here](https://github.com/kickinattech/m365TenantChaos/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement_)
+There is number of enhancments that I wish/need to do. You can see list full list of proposed enhancements [here](https://github.com/kickinattech/m365TenantChaos/issues?q=is%3Aissue+is%3Aopen)
