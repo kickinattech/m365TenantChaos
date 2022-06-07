@@ -28,4 +28,4 @@ Before using Microsoft 365 CLI in the script, you should manually run  Microsoft
 
 ## ToDo
 
-There is number of enhancments that I wish/need to do. You can see list full list of proposed enhancements [here](https://github.com/kickinattech/m365TenantChaos/issues?q=is%3Aissue+is%3Aopen)
+There is number of enhancments/known issues that I wish/need to do. You can see list full list [here](https://github.com/kickinattech/m365TenantChaos/issues?q=is%3Aissue+is%3Aopen)
