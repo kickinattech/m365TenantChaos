@@ -8,7 +8,7 @@ This is a python script used to randomise activity in an m365 tenant. When paire
 
 ## History
 
-I initially created a PowerShell script for my own use in May 2021. I recreated it in a python script and updated it, and I then released it publicly on Github.
+I initially created a PowerShell script for my own use in May 2021. I recreated it in a python script and updated it, and I then decided to release it publicly on here.
 
 ## Setup
 
