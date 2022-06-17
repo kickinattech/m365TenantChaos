@@ -21,7 +21,7 @@ import json
 import argparse
 import os
 import logging
-
+import time
 
 logger = logging.getLogger('simple_example')
 logger.setLevel(logging.DEBUG)
@@ -197,11 +197,13 @@ def new_groups(
             group_name = arg_objectname + random_name + "-Random-Group"
             logger.info("Creating Group Called %s and Private Is Set To %s",
                         group_name, str(is_private_group).lower())
-            m365_creategroup_return = subprocess.run(
-                ["m365", "aad", "o365group", "add", "--displayName", group_name, "--description",
-                 "This is has been added by M365 Random Script", "--mailNickname", group_name,
-                 "--isPrivate", str(is_private_group).lower()], capture_output=True,
-                text=True, check=True)
+
+            cmdfull = "aad o365group add --displayName " + group_name + " --description " + "\"This_is_has_been_added_by_M365_Random_Script\"" + \
+                " --mailNickname " + group_name + \
+                " --isPrivate " + str(is_private_group).lower()
+            logger.info("cmdfull is:  m365 %s ", cmdfull)
+            m365_creategroup_return = run_m365client(cmdfull, True, True, True)
+
             logger.debug("M365 Status Result: %s",
                          m365_creategroup_return.stdout)
             logger.debug("M365 status Error Result: %s ",
@@ -234,10 +236,11 @@ def new_teams(
             random_name = ''.join(random.choice(letters) for i in range(10))
             team_name = arg_objectname + random_name + "-Random-teams"
             logger.info("Creating Team Called %s ", team_name)
-            m365_createteam_return = subprocess.run(
-                ["m365", "teams", "team", "add", "--name", team_name, "--description",
-                 "This is has been added by M365 Random Script", "--output", "text", "--wait"],
-                capture_output=False, text=False, check=False)
+            cmdfull = "teams team add --name " + team_name + \
+                " --description \"This_is_has_been_added_by_M365_Random_Script\" --output text --wait"
+            logger.info("cmdfull is:  m365 %s ", cmdfull)
+            m365_createteam_return = run_m365client(
+                cmdfull, False, False, False)
             logger.debug("M365 Status Result: %s",
                          m365_createteam_return.stdout)
             logger.debug("M365 status Error Result: %s ",
@@ -266,9 +269,9 @@ def remove_teams(
         while while_count <= count:
             logger.debug("Remove teams The count Is %s of %s ",
                          str(while_count), str(count))
-            m365_teamlist_return = subprocess.run(
-                ["m365", "teams", "team", "list"],
-                capture_output=True, text=True, check=True)
+            cmdfull = "teams team list"
+            logger.info("cmdfull is:  m365 %s ", cmdfull)
+            m365_teamlist_return = run_m365client(cmdfull, True, True, True)
             logger.debug("M365 Status Result: %s", m365_teamlist_return.stdout)
             logger.debug("M365 status Error Result: %s",
                          m365_teamlist_return.stderr)
@@ -287,9 +290,12 @@ def remove_teams(
             team_to_remove_id = str(team_details['id'])
             logger.info("Removing team: %s with the ID of %s ",
                         team_to_remove_name,  team_to_remove_id)
-            m365_removeteam_return = subprocess.run(
-                ["m365", "teams", "team", "remove", "-i", team_to_remove_id,
-                 "--confirm"], capture_output=True, text=True, check=True)
+
+            cmdfull = "teams team remove -i " + team_to_remove_id + " --confirm"
+            logger.info("cmdfull is:  m365 %s ", cmdfull)
+
+            m365_removeteam_return = run_m365client(cmdfull, True, True, True)
+
             logger.debug("M365 Status Result: %s",
                          m365_removeteam_return.stdout)
             logger.debug("M365 status Error Result: %s ",
@@ -320,9 +326,9 @@ def new_apps(count):
             random_name = ''.join(random.choice(letters) for i in range(10))
             app_name = arg_objectname + random_name + "-Random-App"
             logger.info("Creating App Called %s", app_name)
-            m365_createapp_return = subprocess.run(
-                ["m365", "aad", "app", "add", "--name", app_name, "--withSecret"],
-                capture_output=True, text=True, check=True)
+            cmdfull = "aad app add --name " + app_name + "--withSecret"
+            logger.info("cmdfull is:  m365 %s ", cmdfull)
+            m365_createapp_return = run_m365client(cmdfull, True, True, True)
             logger.debug("M365 Status Result: %s",
                          m365_createapp_return.stdout)
             logger.debug("M365 status Error Result: %s",
@@ -368,10 +374,9 @@ def remove_apps(
             app_to_remove_id = str(app_details['appId'])
             logger.info("Removing App: %s witht he ID of %s",
                         app_to_remove_name, app_to_remove_id)
-            m365_removeeapp_return = subprocess.run(
-                ["m365", "aad", "app", "delete", "--appId",
-                    app_to_remove_id, "--confirm"],
-                capture_output=True, text=True, check=True)
+            cmdfull = "aad app remove --appId " + app_to_remove_id + " --confirm"
+            logger.info("cmdfull is:  m365 %s ", cmdfull)
+            m365_removeeapp_return = run_m365client(cmdfull, True, True, True)
             logger.debug("M365 Status Result: %s",
                          m365_removeeapp_return.stdout)
             logger.debug("M365 status Error Result: %s ",
@@ -400,9 +405,10 @@ def remove_groups(
         while while_count <= count:
             logger.debug("Remove Group The count Is %s of %s",
                          str(while_count), str(count))
-            m365_grouplist_return = subprocess.run(
-                ["m365", "aad", "o365group", "list", "-d", arg_objectname],
-                capture_output=True, text=True, check=True)
+
+            cmdfull = "aad o365group list -d " + arg_objectname
+            logger.info("cmdfull is:  m365 %s ", cmdfull)
+            m365_grouplist_return = run_m365client(cmdfull, True, True, True)
             logger.debug("M365 Status Result: %s",
                          m365_grouplist_return.stdout)
             logger.debug("M365 status Error Result: %s ",
@@ -418,9 +424,10 @@ def remove_groups(
             group_to_remove_id = str(group_details['id'])
             logger.info("Removing Group: %s with the ID of %s",
                         group_to_remove_name, group_to_remove_id)
-            m365_removegroup_return = subprocess.run(
-                ["m365", "aad", "o365group", "remove", "-i", group_to_remove_id,
-                 "--confirm"], capture_output=True, text=True, check=True)
+            cmdfull = "aad o365group remove -i " + group_to_remove_id + " --confirm"
+            logger.info("cmdfull is:  m365 %s ", cmdfull)
+            m365_removegroup_return = run_m365client(cmdfull, True, True, True)
+
             logger.debug("M365 Status Result: %s",
                          m365_removegroup_return.stdout)
             logger.debug("M365 status Error Result: %s ",
@@ -445,9 +452,9 @@ def add_channels(
         raise Exception("count is Less than 0")
     else:
         while_count = 1
-        m365_teamlist_return = subprocess.run(
-            ["m365", "teams", "team", "list"],
-            capture_output=True, text=True, check=False)
+        cmdfull = "teams team list"
+        logger.info("cmdfull is:  m365 %s ", cmdfull)
+        m365_teamlist_return = run_m365client(cmdfull, True, True, False)
         logger.debug("M365 Status Result: %s", m365_teamlist_return.stdout)
         logger.debug("M365 status Error Result: %s ",
                      m365_teamlist_return.stderr)
@@ -474,11 +481,12 @@ def add_channels(
             channel_name = arg_objectname + random_name + "-Random-channel"
             logger.debug("Creating channel Called %s in %s ",
                          channel_name, team_to_change_name)
-            m365_createchannel_return = subprocess.run(
-                ["m365", "teams", "channel", "add", "-i", team_to_change_id, "-n",
-                 channel_name, "--description",
-                 "This is has been added by M365 Random Script", "--output", "text"],
-                capture_output=False, text=False, check=False, shell=False)
+            cmdfull = "teams channel add -i " + team_to_change_id + " -n " + channel_name + \
+                " --description " + "\"This_is_has_been_added_by_M365_Random_Script\"" + \
+                " --output " + "text"
+            logger.info("cmdfull is:  m365 %s ", cmdfull)
+            m365_createchannel_return = run_m365client(
+                cmdfull, False, False, False)
             logger.debug("M365 Status Result: %s",
                          m365_createchannel_return.stdout)
             logger.debug("M365 status Error Result: %s ",
@@ -541,7 +549,7 @@ def new_random_files(
     else:
         logger.debug("count is Greater Than 0")
         chars = ''.join([random.choice(string.ascii_letters)
-                        for i in range(maximum_byte_size)])  # 1
+                        for i in range(maximum_byte_size)])
 
         while_count = 1
         while while_count <= number_of_files_to_create:
@@ -556,6 +564,44 @@ def new_random_files(
             with open(full_file_path_and_name, 'w', encoding="utf-8") as open_file:
                 open_file.write(chars)
             while_count = while_count + 1
+
+
+def run_m365client(
+        M365_CLIENT_COMMAND,
+        capture_output_status,
+        text_status,
+        checks_status,
+
+):
+    '''
+         Runs the m365 client with parametera provided
+
+            Parameters:
+                    count(int): How many teams to create as int
+            Returns:
+                    None
+    '''
+    logger.debug("Running M365 client with following parameters: %s",
+                 str(M365_CLIENT_COMMAND))
+    argument = f' {M365_CLIENT_COMMAND}'
+    command = f'm365{argument}'.split(' ')
+    retry_count = 5
+    delay = 5
+
+    success = False
+
+    for _ in range(retry_count):
+        logger.debug("Starting M365 The Rety M365 Count Is: %s ", retry_count)
+        try:
+            m365_cmd_return = subprocess.run(command,
+                                             capture_output=capture_output_status, text=text_status, check=checks_status)
+            success = True
+            break
+        except subprocess.CalledProcessError as e:
+            logger.debug("M365 status Error Result: %s", e.output)
+            logger.debug("M365 Failed- Rety M365 Count: %s ", retry_count)
+            time.sleep(delay)
+    return m365_cmd_return
 
 
 # *****************Main Script*****************
@@ -579,11 +625,7 @@ log_out_of_systems()
 
 logger.info("Logging Into Systems with Script Username & Passwords")
 login_into_systems(arg_username, arg_password)
-#logger.debug("Random Values: %s", str(arg_static))
 
-# Remove comments below once implement https://github.com/kickinattech/m365TenantChaos/issues/2
-#run_count = (get_count_value(arg_static, arg_maximumnumber))
-#new_random_files(run_count, run_count, "./files")
 
 run_count = get_count_value(arg_static, arg_maximumnumber)
 new_teams(run_count)
