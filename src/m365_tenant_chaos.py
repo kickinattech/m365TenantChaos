@@ -92,14 +92,14 @@ def get_m365_status():
             Parameters:
                     None
             Returns:
-                     get_m365_status (string): Binary string of the sum of a and b
+                      m365_status_return output from subproccess.run()
     '''
     logger.debug("Gettting Login Status For M365 Cli")
     m365_status_return = subprocess.run(
         ["m365", "status"], capture_output=True, text=True, check=True)
     logger.debug("M365 Status Result: %s", m365_status_return.stdout)
     logger.debug("M365 status Error Result: %s ", m365_status_return.stderr)
-    return m365_status_return.stdout, m365_status_return.stderr
+    return m365_status_return
 
 
 def login_into_systems(
@@ -109,7 +109,8 @@ def login_into_systems(
          Login into third party systems such as AD & M365 client.
 
             Parameters:
-                    None
+                    M365_username (string): Username to use to login into M365.
+                    M365_password (string): Password to use to login into M365.
             Returns:
                     None
     '''
@@ -165,6 +166,7 @@ def new_groups(
 
             Parameters:
                     count(int): How many groups to create as int
+                    group_type(string): What type of group to create.
             Returns:
                     None
     '''
@@ -255,7 +257,7 @@ def remove_teams(
     Gets list of O365 teams and removes teams based on the count parmeters.
 
             Parameters:
-                    count (int): A decimal integer
+                    count(int): How many teams to remove as int
 
             Returns:
                     no return
@@ -391,7 +393,7 @@ def remove_groups(
     Gets list of O365 groups and removes groups based on the count parmeters.
 
             Parameters:
-                    count (int): A decimal integer
+                    count(int): How many groups to remove as int
 
             Returns:
                     no return
@@ -442,7 +444,7 @@ def add_channels(
     Add channels to a random team the count parmeters.
 
             Parameters:
-                    count (int): A decimal integer
+                    count(int): How many channels to add as int
 
             Returns:
                     no return
@@ -502,9 +504,10 @@ def get_count_value(
         Checks if static if not returns random count value else returns static value.
 
             Parameters:
-                    is_chaosmode (Boolen): If going to return a random number o static number
+                    is_chaosmode (Boolen): If going to return a random number or static number
+                    maximum_number (int): The maximum number to return if in chaosmode
             Returns:
-                    run_count_return(Int)
+                    run_count (int): How many times to run the m365 command
     '''
     if is_chaosmode is False:
         if arg_setupmode is False:
@@ -532,9 +535,11 @@ def new_random_files(
         Create random files to number provide..
 
             Parameters:
-                    is_static (Boolen): If going to return a random number o static number
+                    number_of_files_to_create (int): How many files to create
+                    maximum_byte_size (int): The maximum size of the file
+                    file_location (str): The location to create the files
             Returns:
-                    run_count_return(Int)
+                    None
     '''
     directory = os.getcwd()
     logger.debug(directory)
@@ -577,9 +582,12 @@ def run_m365client(
          Runs the m365 client with parametera provided
 
             Parameters:
-                    count(int): How many teams to create as int
+                    M365_CLIENT_COMMAND (str): The command arguments to run
+                    capture_output_status (bool): If to capture the output
+                    text_status (bool): If to return the text output
+                    checks_status (bool): If to check the status code
             Returns:
-                    None
+                    m365_return (subprocess.CompletedProcess): The return of the m365 client
     '''
     logger.debug("Running M365 client with following parameters: %s",
                  str(M365_CLIENT_COMMAND))
