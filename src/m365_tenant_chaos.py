@@ -99,7 +99,7 @@ def get_m365_status():
         ["m365", "status"], capture_output=True, text=True, check=True)
     logger.debug("M365 Status Result: %s", m365_status_return.stdout)
     logger.debug("M365 status Error Result: %s ", m365_status_return.stderr)
-    return m365_status_return
+    return m365_status_return.stdout, m365_status_return.stderr
 
 
 def login_into_systems(
