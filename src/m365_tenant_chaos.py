@@ -639,7 +639,7 @@ def run_m365client(
                  str(m365_client_command))
     argument = f' {m365_client_command}'
     command = f'm365{argument}'.split(' ')
-    retry_count = 10
+    retry_count = 20
     delay = 10
 
     m365_status = get_m365_status(arg_banneddomain)
