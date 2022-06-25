@@ -23,6 +23,8 @@ import os
 import logging
 import time
 
+
+    
 logger = logging.getLogger('simple_example')
 logger.setLevel(logging.DEBUG)
 # create file handler which logs even debug messages
@@ -78,27 +80,55 @@ arg_bannedDomain = args.banneddomain
 arg_static = args.chaosmode
 arg_maximumnumber = args.maxnumber
 arg_setupmode = args.setupmode
+class BannedDomainError(LookupError):
+    logger.debug("Error: %s",LookupError)
 
 logger.debug("details: %s - %s - %s - %s - %s - %s", arg_username, arg_password, arg_objectname,
              arg_bannedDomain, arg_static, arg_setupmode)
 
 # *****************Functions*****************
-
-
-def get_m365_status():
+def get_az_status(
+    bannedDomain):
     '''
     Returns the status of the m365 client.
 
             Parameters:
                     None
             Returns:
+                      az_account_return (string): The status of the m365 client.
+    '''
+    logger.debug("Gettting Account Status For Az Cli")
+    cmdfull = "account show"
+    logger.info("cmdfull is:  az %s ", cmdfull)
+    az_account_return = run_az_client(cmdfull, True, True, False)
+    #az_account_return = subprocess.run(["az", "account", "show"], capture_output=True, text=True, check=True)
+    logger.debug("Az Status Result: %s", az_account_return.stdout)
+    logger.debug("Az status Error Result: %s ", az_account_return.stderr)
+    if bannedDomain in az_account_return.stdout:
+        logger.debug("Banned Domain Found")
+        raise BannedDomainError("Banned Domain Found")
+    return az_account_return
+
+def get_m365_status(
+    bannedDomain):
+    '''
+    Returns the status of the m365 client.
+
+            Parameters:
+                    bannedDomain (string): Domain name to check and stop script it matches.  Use to check for production domain.
+            Returns:
                       m365_status_return output from subproccess.run()
     '''
     logger.debug("Gettting Login Status For M365 Cli")
+    
     m365_status_return = subprocess.run(
         ["m365", "status"], capture_output=True, text=True, check=True)
     logger.debug("M365 Status Result: %s", m365_status_return.stdout)
     logger.debug("M365 status Error Result: %s ", m365_status_return.stderr)
+    if bannedDomain in m365_status_return.stdout:
+        logger.debug("Banned Domain Found In M365 Status")
+        raise BannedDomainError ("Banned Domain Found In M365 Status")
+        return False
     return m365_status_return.stdout, m365_status_return.stderr
 
 
@@ -121,20 +151,22 @@ def login_into_systems(
          "-p", m365_password], capture_output=True, text=True, check=True)
     logger.debug("M365 Login Result: %s", m365_login_return.stdout)
     logger.debug("MM365 Login Error Result: %s", m365_login_return.stderr)
-    m365_status = get_m365_status()
+    m365_status = get_m365_status(arg_bannedDomain)
     if arg_username in m365_status[0]:
         logger.debug("M365 Cli Logged In. Current Status: %s", m365_status[0])
     else:
         logger.debug("M365 Cli NOT Logged In. Current Status: %s",
                      m365_status[0])
     logger.debug("Logging Into AD With AZ Command")
-    az_login_return = subprocess.run(
-        ["az", "login", "-t", "password", "-u", m365_username, "-p", m365_password,
-         "--allow-no-subscription", "--tenant", "3knkb.onmicrosoft.com"],
-        capture_output=True, text=True, check=True)
-    logger.debug("M365 Login Result: %s", az_login_return.stdout)
-    logger.debug("MM365 Login Error Result: %s", az_login_return.stderr)
+    tenant_id = arg_username[arg_username.index('@') + 1 : ]
+    cmdfull = "login -t password -u " + m365_username + " -p " + m365_password + " --allow-no-subscriptions --tenant " + tenant_id
+    logger.info("cmdfull is:  az %s ", cmdfull)
+    az_account_return = run_az_client(cmdfull, True, True, False)
 
+    logger.debug("M365 Login Result: %s", az_account_return.stdout)
+    logger.debug("MM365 Login Error Result: %s", az_account_return.stderr)
+    az_status_return = get_az_status(arg_bannedDomain)
+    logger.debug("Az Status Result: %s", az_status_return.stdout)
 
 def log_out_of_systems():
     '''
@@ -152,8 +184,11 @@ def log_out_of_systems():
     logger.debug("M365 status Error Result: %s ",
                  m365_loggingout_return.stderr)
     logger.debug("Logging Out Of AD")
-    az_loggingout_return = subprocess.run(
-        ["az", "logout"], capture_output=True, text=True, check=False)
+    cmdfull = "logout"
+    logger.info("cmdfull is:  az %s ", cmdfull)
+    az_loggingout_return = run_az_client(cmdfull, True, True, False)
+   # az_loggingout_return = subprocess.run(
+      #  ["az", "logout"], capture_output=True, text=True, check=False)
     logger.debug("AZ Status Result: %s ", az_loggingout_return.stdout)
     logger.debug("AZ status Error Result: %s", az_loggingout_return.stderr)
 
@@ -280,7 +315,7 @@ def remove_teams(
             team_list = json.loads(m365_teamlist_return.stdout)
             team_list_filtered = [
                 x for x in team_list if "-teams" in x['displayName'] and
-                "KickinAt-Test" in x['displayName']]
+                arg_objectname in x['displayName']]
             list_total = len(team_list_filtered)
 
             if list_total == 1:
@@ -358,8 +393,11 @@ def remove_apps(
         while while_count <= count:
             logger.debug("Remove App The count Is %s of %s ",
                          str(while_count), str(count))
-            m365_applist_return = subprocess.run(
-                ["az", "ad", "app", "list", "--all"], capture_output=True, text=True, check=True)
+            cmdfull = "ad app list --all"
+            logger.info("cmdfull is:  az %s ", cmdfull)
+            m365_applist_return = run_az_client(cmdfull, True, True, True)
+            #m365_applist_return = subprocess.run(
+                #["az", "ad", "app", "list", "--all"], capture_output=True, text=True, check=True)
             logger.debug("AZ Status Result: %s ", m365_applist_return.stdout)
             logger.debug("AZ status Error Result: %s",
                          m365_applist_return.stderr)
@@ -463,7 +501,7 @@ def add_channels(
         team_list = json.loads(m365_teamlist_return.stdout)
         team_list_filtered = [
             x for x in team_list if "-teams" in x['displayName'] and
-            "KickinAt-Test" in x['displayName']]
+            arg_objectname in x['displayName']]
         list_total = len(team_list_filtered)
 
         if list_total == 1:
@@ -597,7 +635,7 @@ def run_m365client(
     delay = 5
 
     success = False
-
+    m365_status = get_m365_status(arg_bannedDomain)
     for _ in range(retry_count):
         logger.debug("Starting M365 The Rety M365 Count Is: %s ", retry_count)
         try:
@@ -612,10 +650,48 @@ def run_m365client(
     return m365_cmd_return
 
 
+def run_az_client(
+        AZ_CLIENT_COMMAND,
+        capture_output_status,
+        text_status,
+        checks_status,
+
+):
+    '''
+         Runs the m365 client with parametera provided
+
+            Parameters:
+                    M365_CLIENT_COMMAND (str): The command arguments to run
+                    capture_output_status (bool): If to capture the output
+                    text_status (bool): If to return the text output
+                    checks_status (bool): If to check the status code
+            Returns:
+                    m365_return (subprocess.CompletedProcess): The return of the m365 client
+    '''
+    logger.debug("Running AZ client with following parameters: %s",
+                 str(AZ_CLIENT_COMMAND))
+    argument = f' {AZ_CLIENT_COMMAND}'
+    command = f'az{argument}'.split(' ')
+    retry_count = 5
+    delay = 5
+
+    success = False
+    for _ in range(retry_count):
+        logger.debug("Starting AZ The Rety AZ Count Is: %s ", retry_count)
+        try:
+            az_cmd_return = subprocess.run(command,
+                                             capture_output=capture_output_status, text=text_status, check=checks_status)
+            success = True
+            break
+        except subprocess.CalledProcessError as e:
+            logger.debug("AZ status Error Result: %s", e.output)
+            logger.debug("AZ Failed- Rety AZ Count: %s ", retry_count)
+            time.sleep(delay)
+    return az_cmd_return
+
 # *****************Main Script*****************
 if str(arg_bannedDomain) in str(arg_username):
-    raise Exception("The username containes " +
-                    arg_bannedDomain + " stopping script")
+        raise BannedDomainError ("The username containes " + arg_bannedDomain + " now stopping script")           
 
 if arg_static is False:
     logger.info("Running Chaos Mode With Random Values")
@@ -634,6 +710,8 @@ log_out_of_systems()
 logger.info("Logging Into Systems with Script Username & Passwords")
 login_into_systems(arg_username, arg_password)
 
+run_count = get_count_value(arg_static, arg_maximumnumber)
+add_channels(run_count)
 
 run_count = get_count_value(arg_static, arg_maximumnumber)
 new_teams(run_count)
@@ -659,7 +737,7 @@ if arg_setupmode is False:
 logger.info(
     "Logging Out Of Systems to Reset 3rd Party Tools Back To Logged Out Status")
 log_out_of_systems()
-m365_current_status = get_m365_status()
+m365_current_status = get_m365_status(arg_bannedDomain)
 if arg_username in m365_current_status[0]:
     logger.info("M365 Cli Logged In. Current Status: %s",
                 m365_current_status[0])
