@@ -8,6 +8,10 @@
 
 This is a python script used to randomise activity in an m365 tenant. When paired with a pipeline, for example, Azure DevOps, this script allows random activity to be conducted on an M365 tenant for each night. **Do Not Use On Production This Script Will Create and Delete Random Resources**
 
+This script will do the following:
+Create New Teams, Create New Apps, Create New Groups, Add Channels to Random Team,
+Remove Teams, Remove Apps, Remove Groups
+
 ## History
 
 I initially created a PowerShell script for my own use in May 2021. I recreated it in a python script and updated it, and I then decided to release it publicly on here.
